@@ -1,2 +1,2 @@
 # INE5404 Project
-Projeto
+Projeto de POO2 | Computação | UFSC
