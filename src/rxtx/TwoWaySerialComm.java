@@ -7,7 +7,9 @@ import gnu.io.SerialPort;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 public class TwoWaySerialComm {
 
@@ -16,6 +18,12 @@ public class TwoWaySerialComm {
     public TwoWaySerialComm(String[] dataContent) {
         super();
         this.dataContent = dataContent;
+    }
+
+    private List<SerialListener> listeners = new ArrayList<SerialListener>();
+
+    public void addListener(SerialListener toAdd) {
+        listeners.add(toAdd);
     }
 
     public void connect(String portName) throws Exception {
@@ -44,7 +52,7 @@ public class TwoWaySerialComm {
     }
 
     /** */
-    public static class SerialReader implements Runnable {
+    public class SerialReader implements Runnable {
 
         InputStream in;
         String[] dataContent;
@@ -82,6 +90,10 @@ public class TwoWaySerialComm {
                     }
 
                 }
+
+                for (SerialListener hl : listeners)
+                    hl.serialReceived();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

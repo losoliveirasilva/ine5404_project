@@ -37,6 +37,7 @@ public class GraphPanel extends JPanel {
 
     public void updateGraph(String[] data){
         graph.updateData(data);
+        this.graph.repaint();
     }
 
     @Override

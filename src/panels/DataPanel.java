@@ -15,9 +15,7 @@ public class DataPanel extends JPanel /*implements ActionListener*/{
 
     Choice choice;
 
-    public DataPanel(String[] dataContent) {
-
-        this.dataContent = dataContent;
+    public DataPanel() {
 
         labelInfo = new JLabel("Informations:");
 
@@ -53,6 +51,12 @@ public class DataPanel extends JPanel /*implements ActionListener*/{
             .addComponent(labelData[3])
         );
 
+    }
+
+    public void updateLabels(String[] dataContent){
+        for (int i = 0; i < 4; i++) {
+            this.labelData[i].setText("Dado " + i + ": " + dataContent[i]);
+        }
     }
 
 }

@@ -13,13 +13,20 @@ public class Graph extends JPanel {
     int hBorders = 5; // No. de divisões horizontais
     int vBorders = 5; // No. de divisões verticais
 
-    Ponto origin;
+    private static final Color[] colorset = {
+        Color.BLUE,
+        Color.RED,
+        Color.GREEN,
+        Color.MAGENTA,
+        Color.CYAN,
+        Color.ORANGE
+    };
+
     //Ponto[] data = new Ponto[width];
     Ponto[][] graphLine = new Ponto[4][10];
     GraphData[] data = new GraphData[4];
 
     public Graph() {
-        updateOrigin();
         startData();
         setBackground(Color.WHITE);
 
@@ -31,68 +38,40 @@ public class Graph extends JPanel {
         data[2] = new GraphData(0, 140, 50);
         data[3] = new GraphData(0, 140, 50);
 
-        setPreferredSize(new Dimension(701, 601));
+        setPreferredSize(new Dimension(width+1, height+1));
 
     }
 
     public void paint(Graphics g) {
         super.paint(g);
-        updateOrigin();
-        g.drawRect(origin.x, origin.y-height, width, height);
+        g.setColor(Color.BLACK);
+        g.drawRect(0, 0, width, height);
         drawBorders(g);
         drawData(g);
     }
 
+    // Considera height = 600 e origin.x = 0
     public void drawBorders(Graphics g) {
+        g.setColor(Color.LIGHT_GRAY);
         for (int i = 1; i < hBorders; i++) {
-            g.drawLine(origin.x + (width * i) / hBorders, origin.y, origin.x
-                + (width * i) / hBorders, origin.y - height);
+            g.drawLine((width * i) / hBorders, height, (width * i) / hBorders, 0);
         }
         for (int i = 1; i < vBorders; i++) {
-            g.drawLine(origin.x, origin.y - (height * i) / vBorders, origin.x
-                + width, origin.y - (height * i) / vBorders);
+            g.drawLine(0, height - (height * i) / vBorders, width, height - (height * i) / vBorders);
         }
-    }
-
-    public void updateOrigin() {
-        origin = new Ponto(((this.getSize().width) / 2) - 350, ((this.getSize().height) / 2) + 300);
     }
 
     public void drawData(Graphics g) {
-        g.setColor(Color.BLUE);
-        for (int i = 0; i < data[0].getCurrValue().length - 1; i++) {
-            g.drawLine(origin.x + ((width / data[0].getCurrValue().length) * i), origin.y - (int)(data[0].getRelativeCurrValue(i) * height), origin.x + ((width / data[0].getCurrValue().length) * (i+1)),
-                origin.y - (int)(data[0].getRelativeCurrValue(i+1) * height));
-
+        for (int k = 0; k < data.length; k++) {
+            g.setColor(colorset[k]);
+            for (int i = 0; i < data[0].getCurrValue().length - 1; i++) {
+                g.drawLine((width / data[k].getCurrValue().length) * i, height - (int)(data[k].getRelativeCurrValue(i) * height), ((width / data[k].getCurrValue().length) * (i+1)),
+                    height - (int)(data[k].getRelativeCurrValue(i+1) * height));
+            }
         }
-
-        g.setColor(Color.RED);
-        for (int i = 0; i < data[1].getCurrValue().length - 1; i++) {
-            g.drawLine(origin.x + ((width / data[1].getCurrValue().length) * i), origin.y - (int)(data[1].getRelativeCurrValue(i) * height), origin.x + ((width / data[1].getCurrValue().length) * (i+1)),
-                origin.y - (int)(data[1].getRelativeCurrValue(i+1) * height));
-
-        }
-
-        g.setColor(Color.GREEN);
-        for (int i = 0; i < data[2].getCurrValue().length - 1; i++) {
-            g.drawLine(origin.x + ((width / data[2].getCurrValue().length) * i), origin.y - (int)(data[2].getRelativeCurrValue(i) * height), origin.x + ((width / data[2].getCurrValue().length) * (i+1)),
-                origin.y - (int)(data[2].getRelativeCurrValue(i+1) * height));
-
-        }
-
-        g.setColor(Color.YELLOW);
-        for (int i = 0; i < data[3].getCurrValue().length - 1; i++) {
-            g.drawLine(origin.x + ((width / data[3].getCurrValue().length) * i), origin.y - (int)(data[3].getRelativeCurrValue(i) * height), origin.x + ((width / data[3].getCurrValue().length) * (i+1)),
-                origin.y - (int)(data[3].getRelativeCurrValue(i+1) * height));
-
-        }
-
     }
 
     public void updateData(String[] newData) {
-
-
-
         for(int i = 0; i < data.length; i++){
             for (int j = 0; j < (data[i].getCurrValue().length - 1); j++) {
                 data[i].setCurrValue(j,data[i].getCurrValue(j+1));
@@ -106,8 +85,7 @@ public class Graph extends JPanel {
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < (graphLine[i].length); j++) {
-                graphLine[i][j] = new Ponto(origin.x + ((width / graphLine[i].length) * j),
-                    origin.y);
+                graphLine[i][j] = new Ponto(((width / graphLine[i].length) * j), height);
             }
         }
     }

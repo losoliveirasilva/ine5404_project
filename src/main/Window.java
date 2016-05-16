@@ -1,5 +1,6 @@
 package main;
 
+import gnu.io.RXTXVersion;
 import panels.*;
 import rxtx.*;
 
@@ -11,7 +12,7 @@ import java.awt.event.ActionEvent;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
-public class Window extends JFrame {
+public class Window extends JFrame /*implements SerialListener */{
     public static final long serialVersionUID = 1L;
 
     private JMenuBar menuBar;
@@ -24,8 +25,6 @@ public class Window extends JFrame {
 
     private String[] dataContent;
 
-    private TwoWaySerialComm serial;
-
     public Window() {
         super();
 
@@ -33,7 +32,16 @@ public class Window extends JFrame {
 
         dataContent = new String[]{"25", "50", "75", "100"};
 
-        serial = new TwoWaySerialComm(dataContent);
+        TwoWaySerialComm serial = new TwoWaySerialComm(dataContent);
+        serial.addListener(
+            new SerialListener() {
+                public void serialReceived() {
+                    updateData();
+                }
+            }
+        );
+
+        serial.getPortList();
 
         menuBar = new JMenuBar();
         menuFile = new JMenu("File");
@@ -46,14 +54,16 @@ public class Window extends JFrame {
         menuHelp = new JMenu("Help");
         itemAbout = new JMenuItem("About");
 
-        dataPanel = new DataPanel(dataContent);
+        dataPanel = new DataPanel();
         graphPanel = new GraphPanel();
 
         itemAbout.addActionListener(
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-
+                        for (int i=0; i < dataContent.length; i++)
+                            dataContent[i] = Integer.toString(10*i);
+                        updateData();
                     }
                 }
         );
@@ -62,7 +72,11 @@ public class Window extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-
+                        /*try {
+                            serial.connect("/dev/ttyUSB01");
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }*/
                     }
                 }
         );
@@ -111,11 +125,9 @@ public class Window extends JFrame {
 
         setMinimumSize(new Dimension(905, 698));
 
-
-
         pack();
 
-        graphPanel.graph.updateData(dataContent);
+        updateData();
 
     }
 
@@ -127,9 +139,10 @@ public class Window extends JFrame {
         }
     }
 
-    /*private void onSelectRegisterProduct() {
-        WindowEditProduct editProductWindow = new WindowEditProduct(this);
-        editProductWindow.setVisible(true);
-    }*/
+    private void updateData(){
+        System.out.println("updatado");
+        dataPanel.updateLabels(dataContent);
+        graphPanel.updateGraph(dataContent);
+    }
 
 }
