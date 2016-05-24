@@ -1,5 +1,6 @@
 package rxtx;
 
+import gnu.io.*;
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
@@ -136,5 +137,6 @@ public class TwoWaySerialComm {
         }
         return portList;
     }
+
 
 }

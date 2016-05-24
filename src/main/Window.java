@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.Random;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
@@ -24,13 +25,14 @@ public class Window extends JFrame /*implements SerialListener */{
     private GraphPanel graphPanel;
 
     private String[] dataContent;
+    private double[] counterteste = {0.0, 0.0, 0.0, 0.0};
 
     public Window() {
         super();
 
         getOSLookAndFeel();
 
-        dataContent = new String[]{"25", "50", "75", "100"};
+        dataContent = new String[]{"0", "0", "0", "0"};
 
         TwoWaySerialComm serial = new TwoWaySerialComm(dataContent);
         serial.addListener(
@@ -62,7 +64,7 @@ public class Window extends JFrame /*implements SerialListener */{
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         for (int i=0; i < dataContent.length; i++)
-                            dataContent[i] = Integer.toString(10*i);
+                            dataContent[i] = Integer.toString(randInt(0, 100));
                         updateData();
                     }
                 }
@@ -72,11 +74,11 @@ public class Window extends JFrame /*implements SerialListener */{
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        /*try {
-                            serial.connect("/dev/ttyUSB01");
+                        try {
+                            serial.connect("/dev/ttyACM0");
                         } catch (Exception e1) {
                             e1.printStackTrace();
-                        }*/
+                        }
                     }
                 }
         );
@@ -131,6 +133,27 @@ public class Window extends JFrame /*implements SerialListener */{
 
     }
 
+    public void teste() {
+
+        for (int i = 0; i < dataContent.length; i++){
+            if (i%2 ==0)
+                dataContent[i] = "" + (70 + (int)(Math.sin(counterteste[i])*40));
+            else
+                dataContent[i] = "" + (70 + (int)(Math.cos(counterteste[i])*40));
+            counterteste[i] += .05;
+            if (counterteste[i] > 360){
+                counterteste[i] = 0;
+            }
+        }
+        updateData();
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException ie) {
+            //Handle exception
+        }
+
+    }
+
     private void getOSLookAndFeel() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -140,9 +163,25 @@ public class Window extends JFrame /*implements SerialListener */{
     }
 
     private void updateData(){
-        System.out.println("updatado");
         dataPanel.updateLabels(dataContent);
         graphPanel.updateGraph(dataContent);
+    }
+
+    public static int randInt(int min, int max) {
+
+        // NOTE: This will (intentionally) not run as written so that folks
+        // copy-pasting have to think about how to initialize their
+        // Random instance.  Initialization of the Random instance is outside
+        // the main scope of the question, but some decent options are to have
+        // a field that is initialized once and then re-used as needed or to
+        // use ThreadLocalRandom (if using at least Java 1.7).
+        Random rand = new Random();
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
     }
 
 }
