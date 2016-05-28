@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.Random;
 
 import static javax.swing.GroupLayout.Alignment.*;
@@ -74,11 +75,7 @@ public class Window extends JFrame /*implements SerialListener */{
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        try {
-                            serial.connect("/dev/ttyACM0");
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
+                        onSelectNewStand();
                     }
                 }
         );
@@ -182,6 +179,20 @@ public class Window extends JFrame /*implements SerialListener */{
         int randomNum = rand.nextInt((max - min) + 1) + min;
 
         return randomNum;
+    }
+
+    protected JComponent makeTextPanel(String text) {
+        JPanel panel = new JPanel(false);
+        JLabel filler = new JLabel(text);
+        filler.setHorizontalAlignment(JLabel.CENTER);
+        panel.setLayout(new GridLayout(1, 1));
+        panel.add(filler);
+        return panel;
+    }
+
+    private void onSelectNewStand(){
+        NewStandWindow newStand = new NewStandWindow(this);
+        System.out.println(newStand.showDialog());
     }
 
 }
