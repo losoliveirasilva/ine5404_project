@@ -107,7 +107,6 @@ public class Window extends JFrame /*implements SerialListener */{
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(graphPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                //.addComponent(graphPanel)
         );
 
         layout.setVerticalGroup(
@@ -116,7 +115,6 @@ public class Window extends JFrame /*implements SerialListener */{
                 .addGroup(layout.createParallelGroup(CENTER)
                     .addComponent(dataPanel)
                     .addComponent(graphPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-                    //.addComponent(graphPanel)
                 )
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 
