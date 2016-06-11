@@ -13,38 +13,49 @@ public class Graph extends JPanel {
     int hBorders = 5; // No. de divisões horizontais
     int vBorders = 5; // No. de divisões verticais
 
-    private static final Color[] colorset = {
-        Color.BLUE,
-        Color.RED,
-        Color.GREEN,
-        Color.MAGENTA,
-        Color.CYAN,
-        Color.ORANGE
-    };
-
     //Ponto[] data = new Ponto[width];
-    Ponto[][] graphLine = new Ponto[4][10];
-    GraphData[] data = new GraphData[4];
+    private Ponto[][] graphLine;
+    private GraphData[] data;
 
-    public Graph() {
+    private DataPack dataPack;
+    private Color[] colors;
+
+    public Graph(DataPack dataPack) {
+
+        this.dataPack = dataPack;
+        colors = dataPack.getAvailableColor();
+
+        if(this.dataPack.getAvailableNum() > 2) {
+            graphLine = new Ponto[this.dataPack.getAvailableNum() - 2][10];
+            data = new GraphData[this.dataPack.getAvailableNum() - 2];
+        }
+
         startData();
-        setBackground(Color.WHITE);
+        setBackground(colors[0]);
 
-        // pH
+        for (int i = 0; i < data.length; i++){
+            data[i] = new GraphData(0, 140, 50);
+        }
+
+        /*// pH
         data[0] = new GraphData(0, 140, 50);
 
         // Outros (a fazer)
         data[1] = new GraphData(0, 140, 50);
         data[2] = new GraphData(0, 140, 50);
-        data[3] = new GraphData(0, 140, 50);
+        data[3] = new GraphData(0, 140, 50);*/
 
         setPreferredSize(new Dimension(width+1, height+1));
 
     }
 
+    public GraphData [] getGraphData(){ return data;}
+
+    public void setGraphData(GraphData [] g) {this.data = g; }
+
     public void paint(Graphics g) {
         super.paint(g);
-        g.setColor(Color.BLACK);
+        g.setColor(colors[1]);
         g.drawRect(0, 0, width, height);
         drawBorders(g);
         drawData(g);
@@ -52,7 +63,7 @@ public class Graph extends JPanel {
 
     // Considera height = 600 e origin.x = 0
     public void drawBorders(Graphics g) {
-        g.setColor(Color.LIGHT_GRAY);
+        g.setColor(colors[1]);
         for (int i = 1; i < hBorders; i++) {
             g.drawLine((width * i) / hBorders, height, (width * i) / hBorders, 0);
         }
@@ -63,7 +74,7 @@ public class Graph extends JPanel {
 
     public void drawData(Graphics g) {
         for (int k = 0; k < data.length; k++) {
-            g.setColor(colorset[k]);
+            g.setColor(colors[k+2]);
             for (int i = 0; i < data[0].getCurrValue().length - 1; i++) {
                 g.drawLine((width / data[k].getCurrValue().length) * i, height - (int)(data[k].getRelativeCurrValue(i) * height), ((width / data[k].getCurrValue().length) * (i+1)),
                     height - (int)(data[k].getRelativeCurrValue(i+1) * height));
@@ -83,7 +94,7 @@ public class Graph extends JPanel {
 
     public void startData() {
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < (graphLine[i].length); j++) {
                 graphLine[i][j] = new Ponto(((width / graphLine[i].length) * j), height);
             }

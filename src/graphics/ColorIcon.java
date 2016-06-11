@@ -28,6 +28,10 @@ public class ColorIcon implements Icon {
         g.fillRect(0,0, width, height);
     }
 
+    public Color getColor() {
+        return color;
+    }
+
     public int getIconWidth() {
         return 24;
     }

@@ -1,6 +1,7 @@
 package main;
 
-import gnu.io.RXTXVersion;
+import graphics.DataPack;
+import graphics.GraphData;
 import panels.*;
 import rxtx.*;
 
@@ -9,21 +10,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Random;
-
-import static javax.swing.GroupLayout.Alignment.*;
 
 public class Window extends JFrame /*implements SerialListener */{
     public static final long serialVersionUID = 1L;
 
     private JMenuBar menuBar;
     private JMenu menuFile, menuHelp, menuTools, submenuPorts, submenuBaud;
-    private JMenuItem itemNew, itemAbout;
+    private JMenuItem itemNew, itemAbout, itemEditStand;
     private JCheckBoxMenuItem itemBaud9600;
 
-    private DataPanel dataPanel;
-    private GraphPanel graphPanel;
+    private JTabbedPane tabbedPane;
 
     private String[] dataContent;
     private double[] counterteste = {0.0, 0.0, 0.0, 0.0};
@@ -32,6 +31,8 @@ public class Window extends JFrame /*implements SerialListener */{
         super();
 
         getOSLookAndFeel();
+
+        tabbedPane = new JTabbedPane();
 
         dataContent = new String[]{"0", "0", "0", "0"};
 
@@ -47,18 +48,16 @@ public class Window extends JFrame /*implements SerialListener */{
         serial.getPortList();
 
         menuBar = new JMenuBar();
-        menuFile = new JMenu("File");
-        itemNew = new JMenuItem("New");
-        menuTools = new JMenu("Tools");
+        menuFile = new JMenu("Arquivo");
+        itemNew = new JMenuItem("Nova bancada");
+        menuTools = new JMenu("Ferramentas");
         submenuPorts = new JMenu("Ports");
         submenuBaud = new JMenu("Baud Rate");
         itemBaud9600 = new JCheckBoxMenuItem("9600");
         itemBaud9600.setState(true);
-        menuHelp = new JMenu("Help");
-        itemAbout = new JMenuItem("About");
-
-        dataPanel = new DataPanel();
-        graphPanel = new GraphPanel();
+        itemEditStand = new JMenuItem("Editar Bancada");
+        menuHelp = new JMenu("Ajuda");
+        itemAbout = new JMenuItem("Sobre");
 
         itemAbout.addActionListener(
                 new ActionListener() {
@@ -71,6 +70,7 @@ public class Window extends JFrame /*implements SerialListener */{
                 }
         );
 
+        itemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
         itemNew.addActionListener(
                 new ActionListener() {
                     @Override
@@ -80,8 +80,24 @@ public class Window extends JFrame /*implements SerialListener */{
                 }
         );
 
+        itemEditStand.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+        itemEditStand.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    //onEditStand();
+                    TabPanel tp = (TabPanel)tabbedPane.getSelectedComponent();
+                    if(tp != null) {
+                        tp.alertsPanel.addText("Fodeu.", Color.RED);
+                        System.out.println(tp.alertsPanel.getText());
+                    }
+                }
+            }
+        );
+
         menuFile.add(itemNew);
         menuHelp.add(itemAbout);
+        menuTools.add(itemEditStand);
         menuTools.add(submenuPorts);
         submenuBaud.add(itemBaud9600);
         menuTools.add(submenuBaud);
@@ -89,36 +105,13 @@ public class Window extends JFrame /*implements SerialListener */{
         menuBar.add(menuTools);
         menuBar.add(menuHelp);
 
+        add(tabbedPane);
+
         setTitle("Interface");
         setJMenuBar(menuBar);
         //tSize(640, 480);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //setLayout(new GridLayout(1, 2));
-
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
-
-        layout.setHorizontalGroup(
-            layout.createSequentialGroup()
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(dataPanel)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(graphPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
-        layout.setVerticalGroup(
-            layout.createSequentialGroup()
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(CENTER)
-                    .addComponent(dataPanel)
-                    .addComponent(graphPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-                )
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-
-        );
 
         setMinimumSize(new Dimension(905, 698));
 
@@ -157,10 +150,7 @@ public class Window extends JFrame /*implements SerialListener */{
         }
     }
 
-    private void updateData(){
-        dataPanel.updateLabels(dataContent);
-        graphPanel.updateGraph(dataContent);
-    }
+    private void updateData(){}
 
     public static int randInt(int min, int max) {
 
@@ -188,9 +178,74 @@ public class Window extends JFrame /*implements SerialListener */{
         return panel;
     }
 
+    private void createTab(DataPack dataPack){
+        TabPanel tp = new TabPanel(dataPack);
+        tabbedPane.addTab(dataPack.getTabName(), tp);
+        tabbedPane.setTabComponentAt(tabbedPane.getTabCount()-1, new ButtonTabPanel(tabbedPane));
+        tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1);
+        //this.repaint();
+        pack();
+
+        GraphData [] gd = new GraphData[tp.getGraphPanel().getGraph().getGraphData().length];
+        int inteiro = 0;
+
+//        for (int i = 0; i < tp.getGraphPanel().getGraph().getGraphData().length; i++){
+        for (int i = 0; i < dataPack.getAvailableNum() - 2; i++){
+            gd[i] = new GraphData(0, 140, 50);
+            inteiro = 0;
+            for (int k = 0; k < gd[i].getCurrValue().length; k++){
+                gd[i].setCurrValue(k, inteiro);
+                inteiro += i;
+            }
+        }
+
+        tp.getGraphPanel().getGraph().setGraphData(gd);
+
+    }
+
+    private void createTab(DataPack dataPack, GraphData [] gd){
+        TabPanel tp = new TabPanel(dataPack);
+        tp.getGraphPanel().getGraph().setGraphData(gd);
+        tabbedPane.addTab(dataPack.getTabName(), tp);
+        tabbedPane.setTabComponentAt(tabbedPane.getTabCount()-1, new ButtonTabPanel(tabbedPane));
+        tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1);
+        //this.repaint();
+        pack();
+    }
+
     private void onSelectNewStand(){
-        NewStandWindow newStand = new NewStandWindow(this);
-        System.out.println(newStand.showDialog());
+
+        DataPack dataPack = null;
+
+        ConfigStandWindow newStand = new ConfigStandWindow(this, dataPack, "Nova bancada");
+
+        dataPack = newStand.showDialog();
+
+        if(dataPack != null) {
+            if (dataPack.getAvailableNum() > 2) {
+                createTab(dataPack);
+            }
+        }
+
+
+    }
+
+    private void onEditStand(){
+
+        TabPanel tp = (TabPanel)tabbedPane.getSelectedComponent();
+        if(tp != null) {
+            DataPack dataPack = tp.getDataPack();
+            DataPack dp;
+
+            ConfigStandWindow configStand = new ConfigStandWindow(this, dataPack, "Editar bancada");
+
+            dp = configStand.showDialog();
+
+            if(dp.getAvailableNum() > 2) {
+                tabbedPane.remove(tabbedPane.getSelectedIndex());
+                createTab(dp, tp.getGraphPanel().getGraph().getGraphData());
+            }
+        }
     }
 
 }

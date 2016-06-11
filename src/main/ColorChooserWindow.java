@@ -23,7 +23,7 @@ public class ColorChooserWindow extends JDialog implements ChangeListener {
         tcc = new JColorChooser();
         tcc.getSelectionModel().addChangeListener(this);
         tcc.setBorder(BorderFactory.createTitledBorder(
-            "Choose Text Color"));
+            "Escolha a cor"));
 
         add(tcc, BorderLayout.PAGE_END);
 
@@ -33,7 +33,8 @@ public class ColorChooserWindow extends JDialog implements ChangeListener {
         newColor = tcc.getColor();
     }
 
-    public Color showColorChooser(){
+    public Color showColorChooser(Color c){
+        tcc.setColor(c);
         pack();
         setVisible(true);
         return newColor;
