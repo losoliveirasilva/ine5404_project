@@ -49,6 +49,14 @@ public class Graph extends JPanel {
 
     }
 
+    public void setDataPack(DataPack dp) {
+        this.dataPack = dp;
+        colors = dataPack.getAvailableColor();
+        setBackground(colors[0]);
+        drawData(this.getGraphics());
+        drawBorders(this.getGraphics());
+    }
+
     public GraphData [] getGraphData(){ return data;}
 
     public void setGraphData(GraphData [] g) {this.data = g; }

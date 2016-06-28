@@ -12,8 +12,10 @@ import static javax.swing.GroupLayout.Alignment.LEADING;
 
 public class GraphPanel extends JPanel {
     private Graph graph;
+    private DataPack dataPack;
 
     public GraphPanel(DataPack dataPack) {
+        this.dataPack = dataPack;
         graph = new Graph(dataPack);
 
         GroupLayout layout = new GroupLayout(this);
@@ -36,6 +38,11 @@ public class GraphPanel extends JPanel {
     }
 
     public Graph getGraph() { return graph; }
+
+    public void setDataPack(DataPack dp){
+        this.dataPack = dp;
+        graph.setDataPack(dp);
+    }
 
     public void updateGraph(String[] data){
         graph.updateData(data);

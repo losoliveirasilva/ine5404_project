@@ -2,6 +2,8 @@ package panels;
 
 import graphics.DataPack;
 import graphics.Graph;
+import main.Alert;
+import main.AlertManager;
 
 import javax.swing.*;
 
@@ -17,7 +19,9 @@ public class TabPanel extends JPanel{
     private DataPanel dataPanel;
     private GraphPanel graphPanel;
 
-    public AlertsPanel alertsPanel;
+    private AlertsPanel alertsPanel;
+
+    private AlertManager alerts;
 
     public TabPanel(DataPack dataPack){
         super();
@@ -62,6 +66,10 @@ public class TabPanel extends JPanel{
 
         );
 
+        alerts = new AlertManager();
+        //alerts.add(new Alert("DO", 0, 0, 118, 132));
+
+
     }
 
     public DataPack getDataPack(){
@@ -71,13 +79,22 @@ public class TabPanel extends JPanel{
     public void setDataPack(DataPack dataPack){
         this.dataPack = dataPack;
 
-        repaint();
-
-        //dataPanel = new DataPanel(dataPack);
-        //graphPanel = new GraphPanel(dataPack);
+        graphPanel.setDataPack(dataPack);
+        dataPanel.setDataPack(dataPack);
 
     }
 
+    public void setNewData(String[] str){
+        graphPanel.updateGraph(str);
+        dataPanel.updateLabels(str);
+        //addTextAlertPanel(doAlert.compute(Integer.parseInt(str[0])), "red_b");
+        addTextAlertPanel(alerts.computeAll(str), "red_b");
+    }
+
     public GraphPanel getGraphPanel() { return graphPanel; }
+
+    public void addTextAlertPanel(String str, String style){
+        alertsPanel.addText(str, style);
+    }
 
 }

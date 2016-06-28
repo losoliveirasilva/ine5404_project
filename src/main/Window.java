@@ -6,12 +6,14 @@ import panels.*;
 import rxtx.*;
 
 import javax.swing.*;
+import javax.swing.plaf.TabbedPaneUI;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class Window extends JFrame /*implements SerialListener */{
@@ -25,7 +27,11 @@ public class Window extends JFrame /*implements SerialListener */{
     private JTabbedPane tabbedPane;
 
     private String[] dataContent;
-    private double[] counterteste = {0.0, 0.0, 0.0, 0.0};
+    private double[] counterteste = {0.0, 0.0, 0.0, 0.0, 0.0};
+
+    //LinkedList<TabPanel> linkedTabPanel = new LinkedList<TabPanel>();
+
+    String[] str = new String[5];
 
     public Window() {
         super();
@@ -59,25 +65,30 @@ public class Window extends JFrame /*implements SerialListener */{
         menuHelp = new JMenu("Ajuda");
         itemAbout = new JMenuItem("Sobre");
 
+        itemAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
         itemAbout.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                         for (int i=0; i < dataContent.length; i++)
                             dataContent[i] = Integer.toString(randInt(0, 100));
                         updateData();
-                    }
+                    //linkedTabPanel.get(tabbedPane.getSelectedIndex()).addTextAlertPanel("dale", "green_b");
+                    //((TabPanel)tabbedPane.getSelectedComponent()).addTextAlertPanel("dale", "green_b");
                 }
+            }
         );
 
         itemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
         itemNew.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        onSelectNewStand();
-                    }
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    //onSelectNewStand();
+                    //teste
+                    testeConfigAlert();
                 }
+            }
         );
 
         itemEditStand.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
@@ -85,12 +96,7 @@ public class Window extends JFrame /*implements SerialListener */{
             new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //onEditStand();
-                    TabPanel tp = (TabPanel)tabbedPane.getSelectedComponent();
-                    if(tp != null) {
-                        tp.alertsPanel.addText("Fodeu.", Color.RED);
-                        System.out.println(tp.alertsPanel.getText());
-                    }
+                    onEditStand();
                 }
             }
         );
@@ -121,6 +127,10 @@ public class Window extends JFrame /*implements SerialListener */{
 
     }
 
+    private void testeConfigAlert(){
+        new ConfigAlertsWindow(this, new AlertManager()).showDialog();
+    }
+
     public void teste() {
 
         for (int i = 0; i < dataContent.length; i++){
@@ -133,7 +143,7 @@ public class Window extends JFrame /*implements SerialListener */{
                 counterteste[i] = 0;
             }
         }
-        updateData();
+        //updateData();
         try {
             Thread.sleep(50);
         } catch (InterruptedException ie) {
@@ -150,7 +160,24 @@ public class Window extends JFrame /*implements SerialListener */{
         }
     }
 
-    private void updateData(){}
+    private void updateData(){
+
+        str[0] = "" + (125 + (int)(Math.sin(counterteste[0])*10));
+        str[1] = "" + (100 + (int)(Math.sin(counterteste[1])*10));
+        str[2] = "" + (75 + (int)(Math.sin(counterteste[2])*10));
+        str[3] = "" + (50 + (int)(Math.sin(counterteste[3])*10));
+        str[4] = "" + (25 + (int)(Math.sin(counterteste[4])*10));
+
+        if(tabbedPane.getSelectedComponent() != null)
+            ((TabPanel)tabbedPane.getSelectedComponent()).setNewData(str);
+
+        for(int i = 0; i < 5; i++) {
+            counterteste[i] += .5;
+            if (counterteste[i] > 360) {
+                counterteste[i] = 0;
+            }
+        }
+    }
 
     public static int randInt(int min, int max) {
 
@@ -217,7 +244,7 @@ public class Window extends JFrame /*implements SerialListener */{
 
         DataPack dataPack = null;
 
-        ConfigStandWindow newStand = new ConfigStandWindow(this, dataPack, "Nova bancada");
+        ConfigStandWindow newStand = new ConfigStandWindow(this, dataPack, "Nova bancada", true);
 
         dataPack = newStand.showDialog();
 
@@ -233,17 +260,19 @@ public class Window extends JFrame /*implements SerialListener */{
     private void onEditStand(){
 
         TabPanel tp = (TabPanel)tabbedPane.getSelectedComponent();
+
         if(tp != null) {
             DataPack dataPack = tp.getDataPack();
             DataPack dp;
 
-            ConfigStandWindow configStand = new ConfigStandWindow(this, dataPack, "Editar bancada");
+            ConfigStandWindow configStand = new ConfigStandWindow(this, dataPack, "Editar bancada", false);
 
             dp = configStand.showDialog();
 
             if(dp.getAvailableNum() > 2) {
-                tabbedPane.remove(tabbedPane.getSelectedIndex());
-                createTab(dp, tp.getGraphPanel().getGraph().getGraphData());
+                tp.setDataPack(dp);
+                //tabbedPane.remove(tabbedPane.getSelectedIndex());
+                //createTab(dp, tp.getGraphPanel().getGraph().getGraphData());
             }
         }
     }

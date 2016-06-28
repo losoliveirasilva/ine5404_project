@@ -8,17 +8,15 @@ import java.awt.*;
  */
 public class PaintedSquarePanel extends JPanel{
 
-    private Dimension dimension;
-    private Color color;
-
     public PaintedSquarePanel(Dimension d, Color c){
         super();
 
-        dimension = d;
-        color = c;
+        setBackground(c);
+        setPreferredSize(d);
 
-        setBackground(color);
-        setPreferredSize(dimension);
+    }
 
+    public void setColor(Color c){
+        setBackground(c);
     }
 }

@@ -80,7 +80,7 @@ public class ConfigStandWindow extends JDialog{
     private String returnStr;
     private DataPack dataPack = null;
 
-    public ConfigStandWindow(JFrame parent, DataPack dataPack, String str){
+    public ConfigStandWindow(JFrame parent, DataPack dataPack, String str, boolean b){
         super(parent);
 
         setModal(true);
@@ -93,6 +93,7 @@ public class ConfigStandWindow extends JDialog{
         lblCode = new JLabel("Código:");
         edtCode = new JTextField();
         edtCode.setPreferredSize(new Dimension(80, 24));
+        edtCode.setEditable(b);
         btnConfigure = new JButton("Configurar");
         btnConfigure.addActionListener(new ActionListener() {
             @Override
@@ -106,6 +107,7 @@ public class ConfigStandWindow extends JDialog{
         edtTabName = new JTextField();
         edtTabName.setVisible(false);
         edtTabName.setPreferredSize(new Dimension(100, 24));
+        edtTabName.setEditable(b);
 
         /* Background */
         lblBackColor = new JLabel("Background");
