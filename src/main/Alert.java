@@ -16,15 +16,11 @@ public class Alert {
     private boolean greaterThanFlag;
     private int greaterThanValue;
 
-    private int index;
-
-    public Alert(String s, int sn, int index, int lt, int gt){
+    public Alert(String s, int sn, int lt, int gt){
         super();
 
         sensor = s;
         sensorNum = sn;
-
-        this.index = index;
 
         if(lt == -1){
             lessThanFlag = false;
@@ -77,6 +73,26 @@ public class Alert {
 
     public int sensorNum(){
         return this.sensorNum;
+    }
+
+    public boolean lessThanFlag(){
+        return lessThanFlag;
+    }
+
+    public boolean greaterThanFlag(){
+        return greaterThanFlag;
+    }
+
+    public int lessThanValue(){
+        return lessThanValue;
+    }
+
+    public int greaterThanValue(){
+        return greaterThanValue;
+    }
+
+    public String sensor(){
+        return sensor;
     }
 
 }

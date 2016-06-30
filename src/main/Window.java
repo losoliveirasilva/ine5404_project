@@ -21,7 +21,7 @@ public class Window extends JFrame /*implements SerialListener */{
 
     private JMenuBar menuBar;
     private JMenu menuFile, menuHelp, menuTools, submenuPorts, submenuBaud;
-    private JMenuItem itemNew, itemAbout, itemEditStand;
+    private JMenuItem itemNew, itemAbout, itemEditStand, itemEditAlerts;
     private JCheckBoxMenuItem itemBaud9600;
 
     private JTabbedPane tabbedPane;
@@ -62,20 +62,18 @@ public class Window extends JFrame /*implements SerialListener */{
         itemBaud9600 = new JCheckBoxMenuItem("9600");
         itemBaud9600.setState(true);
         itemEditStand = new JMenuItem("Editar Bancada");
+        itemEditAlerts = new JMenuItem("Editar Alertas");
         menuHelp = new JMenu("Ajuda");
         itemAbout = new JMenuItem("Sobre");
 
         itemAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
-        itemAbout.addActionListener(
-            new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                        for (int i=0; i < dataContent.length; i++)
-                            dataContent[i] = Integer.toString(randInt(0, 100));
-                        updateData();
-                    //linkedTabPanel.get(tabbedPane.getSelectedIndex()).addTextAlertPanel("dale", "green_b");
-                    //((TabPanel)tabbedPane.getSelectedComponent()).addTextAlertPanel("dale", "green_b");
-                }
+        itemAbout.addActionListener((e) -> {
+                for (int i=0; i < dataContent.length; i++)
+                    dataContent[i] = Integer.toString(randInt(0, 100));
+                updateData();
+                //linkedTabPanel.get(tabbedPane.getSelectedIndex()).addTextAlertPanel("dale", "green_b");
+                //((TabPanel)tabbedPane.getSelectedComponent()).addTextAlertPanel("dale", "green_b");
+
             }
         );
 
@@ -84,9 +82,9 @@ public class Window extends JFrame /*implements SerialListener */{
             new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //onSelectNewStand();
+                    onSelectNewStand();
                     //teste
-                    testeConfigAlert();
+                    //testeConfigAlert();
                 }
             }
         );
@@ -101,9 +99,20 @@ public class Window extends JFrame /*implements SerialListener */{
             }
         );
 
+        //itemEditAlerts.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+        itemEditAlerts.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    onSelectConfigAlert();
+                }
+            }
+        );
+
         menuFile.add(itemNew);
         menuHelp.add(itemAbout);
         menuTools.add(itemEditStand);
+        menuTools.add(itemEditAlerts);
         menuTools.add(submenuPorts);
         submenuBaud.add(itemBaud9600);
         menuTools.add(submenuBaud);
@@ -127,8 +136,27 @@ public class Window extends JFrame /*implements SerialListener */{
 
     }
 
-    private void testeConfigAlert(){
-        new ConfigAlertsWindow(this, new AlertManager()).showDialog();
+    private void onSelectConfigAlert(){
+
+        if(tabbedPane.getSelectedComponent() != null){
+
+            String[] sensoresold = ((TabPanel) tabbedPane.getSelectedComponent()).getDataPack().getAvailableString();
+            String[] sensoresnew = new String[sensoresold.length - 2];
+
+            for (int i = 0; i < sensoresnew.length; i++) {
+                sensoresnew[i] = sensoresold[i + 2];
+            }
+
+            ConfigAlertsWindow caw = new ConfigAlertsWindow(this, ((TabPanel) tabbedPane.getSelectedComponent()).alertManager(), sensoresnew);
+
+            AlertManager am = caw.showDialog();
+
+            if (am != null) {
+                if (tabbedPane.getSelectedComponent() != null) {
+                    ((TabPanel) tabbedPane.getSelectedComponent()).alertManager(am);
+                }
+            }
+        }
     }
 
     public void teste() {

@@ -32,6 +32,8 @@ public class TabPanel extends JPanel{
 
         alertsPanel = new AlertsPanel();
 
+        alerts = new AlertManager();
+
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setAutoCreateGaps(true);
@@ -66,10 +68,6 @@ public class TabPanel extends JPanel{
 
         );
 
-        alerts = new AlertManager();
-        //alerts.add(new Alert("DO", 0, 0, 118, 132));
-
-
     }
 
     public DataPack getDataPack(){
@@ -96,5 +94,14 @@ public class TabPanel extends JPanel{
     public void addTextAlertPanel(String str, String style){
         alertsPanel.addText(str, style);
     }
+
+    public void alertManager(AlertManager am){
+        this.alerts = am;
+    }
+
+    public AlertManager alertManager(){
+        return this.alerts;
+    }
+
 
 }

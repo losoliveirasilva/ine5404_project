@@ -18,6 +18,16 @@ public class AlertManager {
         alertsList.add(a);
     }
 
+    public Alert[] get(){
+        Alert[] a = new Alert[alertsList.size()];
+
+        for (int i = 0; i < a.length; i++) {
+            a[i] = alertsList.get(i);
+        }
+
+        return a;
+    }
+
     public void remove(Alert a){
         alertsList.remove(a);
     }
