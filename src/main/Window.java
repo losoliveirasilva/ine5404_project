@@ -42,16 +42,16 @@ public class Window extends JFrame /*implements SerialListener */{
 
         dataContent = new String[]{"0", "0", "0", "0"};
 
-        TwoWaySerialComm serial = new TwoWaySerialComm(dataContent);
+        /*TwoWaySerialComm serial = new TwoWaySerialComm(dataContent);
         serial.addListener(
             new SerialListener() {
                 public void serialReceived() {
                     updateData();
                 }
             }
-        );
+        );*/
 
-        serial.getPortList();
+        //serial.getPortList();
 
         menuBar = new JMenuBar();
         menuFile = new JMenu("Arquivo");
