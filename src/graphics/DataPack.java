@@ -155,25 +155,4 @@ public class DataPack {
         return novo;
     }
 
-    // Debug only
-    public String getColorsString(){
-        String str = "";
-
-        str += tabName + "\n";
-        str += (this.cBack != null)?"Back: " + this.cBack.toString() + "\n":"";
-        str += (this.cGrid != null)?"Grid: " + this.cGrid.toString() + "\n":"";
-        str += (this.cpH != null)?"ph: " + this.cpH.toString() + "\n":"";
-        str += (this.cDO != null)?"DO: " + this.cDO.toString() + "\n":"";
-        str += (this.cEC != null)?"EC: " + this.cEC.toString() + "\n":"";
-        str += (this.cORP != null)?"ORP: " + this.cORP.toString() + "\n":"";
-        str += (this.cFlux != null)?"Flux: " + this.cFlux.toString() + "\n":"";
-        str += (this.cTAg != null)?"TAg: " + this.cTAg.toString() + "\n":"";
-        str += (this.cNvAg != null)?"NvAg: " + this.cNvAg.toString() + "\n":"";
-        str += (this.cTAm != null)?"TAm: " + this.cTAm.toString() + "\n":"";
-        str += (this.cHum != null)?"Hum: " + this.cHum.toString() + "\n":"";
-        str += (this.cLight != null)?"Light: " + this.cLight.toString() + "\n":"";
-        
-        return str;
-    }
-
 }

@@ -63,7 +63,7 @@ public class AlertsPanel extends JPanel{
 
         JScrollPane paneScrollPane = new JScrollPane(tPane);
         paneScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        paneScrollPane.setPreferredSize(new Dimension(350, 180));
+        paneScrollPane.setPreferredSize(new Dimension(400, 180));
         paneScrollPane.setMinimumSize(new Dimension(10, 10));
 
         tPane.setEditable(false);

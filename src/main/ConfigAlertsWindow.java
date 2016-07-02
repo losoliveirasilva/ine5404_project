@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Created by losoliveirasilva on 6/22/16.
@@ -117,6 +119,19 @@ public class ConfigAlertsWindow extends JDialog {
 
         pack();
 
+        this.addWindowListener(new WindowAdapter()
+        {
+            public void windowClosed(WindowEvent e)
+            {
+
+            }
+
+            public void windowClosing(WindowEvent e)
+            {
+                closingDialog();
+            }
+        });
+
         setTitle("Configurar alertas");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -129,6 +144,10 @@ public class ConfigAlertsWindow extends JDialog {
         setVisible(true);
 
         return am;
+    }
+
+    private void closingDialog(){
+        am = null;
     }
 
     public void closeDialog(String btn){

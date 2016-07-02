@@ -47,13 +47,13 @@ public class Alert {
 
         if(lessThanFlag){
             if(value < lessThanValue){
-                str = sensor + " é menor que " + lessThanValue + " às " + time + "\n";
+                str = sensor + " é menor que " + lessThanValue + ", com valor de " + value + " (" + time + ")\n";
             }
         }
 
         if(greaterThanFlag){
             if(value > greaterThanValue){
-                str = sensor + " é maior que " + greaterThanValue + " às " + time + "\n";
+                str = sensor + " é maior que " + greaterThanValue + ", com valor de " + value + " (" + time + ")\n";
             }
         }
 
