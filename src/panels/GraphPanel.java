@@ -37,6 +37,14 @@ public class GraphPanel extends JPanel {
 
     }
 
+    public GraphData[] graphData(){
+        return graph.graphData();
+    }
+
+    public void graphData(GraphData[] g){
+        graph.graphData(g);
+    }
+
     public Graph getGraph() { return graph; }
 
     public void setDataPack(DataPack dp){

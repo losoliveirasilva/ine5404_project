@@ -2,8 +2,11 @@ package panels;
 
 import graphics.DataPack;
 import graphics.Graph;
+import graphics.GraphData;
+import graphics.Ponto;
 import main.Alert;
 import main.AlertManager;
+import main.StandFileInfo;
 
 import javax.swing.*;
 
@@ -92,7 +95,7 @@ public class TabPanel extends JPanel{
     public GraphPanel getGraphPanel() { return graphPanel; }
 
     public void addTextAlertPanel(String str, String style){
-        alertsPanel.addText(str, style);
+        alertsPanel.text(str, style);
     }
 
     public void alertManager(AlertManager am){
@@ -103,5 +106,16 @@ public class TabPanel extends JPanel{
         return this.alerts;
     }
 
+    public StandFileInfo standFileInfo(){
+        return new StandFileInfo(alertsPanel.text(), this.dataPack, this.graphPanel.graphData(), this.alerts);
+    }
+
+    public void graphData(GraphData[] g){
+        graphPanel.graphData(g);
+    }
+
+    public DataPanel dataPanel(){
+        return dataPanel;
+    }
 
 }

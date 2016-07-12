@@ -1,6 +1,11 @@
 package graphics;
 
-public class GraphData {
+import java.io.Serializable;
+
+public class GraphData implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    
     int minValue;
     int maxValue;
     int[] currValue;

@@ -43,7 +43,7 @@ public class ButtonTabPanel extends JPanel{
     }
     
     private class TabButton extends JButton implements ActionListener {
-        public TabButton() {
+        TabButton() {
             int size = 17;
             setPreferredSize(new Dimension(size, size));
             setToolTipText("Fechar bancada");

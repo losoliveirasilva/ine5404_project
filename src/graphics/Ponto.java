@@ -1,8 +1,11 @@
 package graphics;
 
 import java.awt.Graphics;
+import java.io.Serializable;
 
-public class Ponto implements Drawable {
+public class Ponto implements Drawable, Serializable {
+
+    private static final long serialVersionUID = 1L;
 	public int x, y;
 
 	public Ponto(int x, int y) {

@@ -1,39 +1,37 @@
 package main;
 
-import graphics.DataPack;
-import graphics.GraphData;
+import graphics.*;
 import panels.*;
-import rxtx.*;
+//import rxtx.*;
 
 import javax.swing.*;
-import javax.swing.plaf.TabbedPaneUI;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.LinkedList;
-import java.util.Random;
+import java.io.*;
 
-public class Window extends JFrame /*implements SerialListener */{
+class Window extends JFrame /*implements SerialListener */{
     public static final long serialVersionUID = 1L;
-
-    private JMenuBar menuBar;
-    private JMenu menuFile, menuHelp, menuTools, submenuPorts, submenuBaud;
-    private JMenuItem itemNew, itemAbout, itemEditStand, itemEditAlerts;
-    private JCheckBoxMenuItem itemBaud9600;
 
     private JTabbedPane tabbedPane;
 
+    private StandFileInfo standFileInfo;
+    private GreenhouseFileInfo greenhouseFileInfo;
+
+    private final JFileChooser fc = new JFileChooser();
+
     private double[] counterteste = {0.0, 0.0, 0.0, 0.0, 0.0};
 
-    String[] str = new String[5];
+    private String[] str = new String[5];
 
-    public Window() {
+    Window() {
         super();
 
         getOSLookAndFeel();
+
+        fc.addChoosableFileFilter(new GreenhouseFileFilter());
+        fc.addChoosableFileFilter(new StandFileFilter());
 
         tabbedPane = new JTabbedPane();
 
@@ -48,9 +46,17 @@ public class Window extends JFrame /*implements SerialListener */{
 
         //serial.getPortList();
 
+        JMenuBar menuBar;
+        JMenu menuFile, menuHelp, menuTools, submenuPorts, submenuBaud;
+        JMenuItem itemSaveGrennhouseFile, itemSaveStandFile, itemOpenFile, itemNew, itemAbout, itemEditStand, itemEditAlerts;
+        JCheckBoxMenuItem itemBaud9600;
+
         menuBar = new JMenuBar();
         menuFile = new JMenu("Arquivo");
         itemNew = new JMenuItem("Nova bancada");
+        itemOpenFile = new JMenuItem("Abrir...");
+        itemSaveGrennhouseFile = new JMenuItem("Salvar estufa");
+        itemSaveStandFile = new JMenuItem("Salvar bancada");
         menuTools = new JMenu("Ferramentas");
         submenuPorts = new JMenu("Ports");
         submenuBaud = new JMenu("Baud Rate");
@@ -61,9 +67,54 @@ public class Window extends JFrame /*implements SerialListener */{
         menuHelp = new JMenu("Ajuda");
         itemAbout = new JMenuItem("Sobre");
 
+        itemSaveGrennhouseFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+        itemSaveGrennhouseFile.addActionListener(
+            e -> {
+                try{
+                    saveGreenhouseFile();
+                }
+                catch (IOException i){
+                    System.out.println(i.toString());
+                }
+            }
+        );
+
+        itemSaveStandFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_MASK));
+        itemSaveStandFile.addActionListener(
+            e -> {
+                try{
+                    saveStandFile();
+                }
+                catch (IOException i){
+                    System.out.println(i.toString());
+                }
+            }
+        );
+
+        itemOpenFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+        itemOpenFile.addActionListener(
+            e -> {
+                try{
+                    String strReturn;
+                    strReturn = openFile();
+                    if(strReturn.equals("ghf")){
+                        openedGreehouseFile();
+                    }else if(strReturn.equals("stf")){
+                        openedStandFile();
+                    }
+                }
+                catch (IOException | ClassNotFoundException i){
+                    System.out.println(i.toString());
+                }
+            }
+        );
+
         itemAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
         itemAbout.addActionListener(
-            e -> updateData()
+            e -> {
+                updateData();
+                //JOptionPane.showMessageDialog(this, "Janela \"Sobre\"", "Sobre", JOptionPane.INFORMATION_MESSAGE);
+            }
         );
 
         itemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
@@ -82,6 +133,9 @@ public class Window extends JFrame /*implements SerialListener */{
         );
 
         menuFile.add(itemNew);
+        menuFile.add(itemOpenFile);
+        menuFile.add(itemSaveGrennhouseFile);
+        menuFile.add(itemSaveStandFile);
         menuHelp.add(itemAbout);
         menuTools.add(itemEditStand);
         menuTools.add(itemEditAlerts);
@@ -94,7 +148,7 @@ public class Window extends JFrame /*implements SerialListener */{
 
         add(tabbedPane);
 
-        setTitle("Interface");
+        setTitle("Kodama");
         setJMenuBar(menuBar);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -106,6 +160,96 @@ public class Window extends JFrame /*implements SerialListener */{
 
     }
 
+    private String openFile() throws IOException, ClassNotFoundException{
+        fc.setSelectedFile(new File(""));
+
+        int returnVal = fc.showOpenDialog(this);
+
+        String extension = "";
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+
+
+            String s = file.getName();
+            int i = s.lastIndexOf('.');
+
+            if (i > 0 &&  i < s.length() - 1) {
+                extension = s.substring(i+1).toLowerCase();
+            }
+
+
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream in = new ObjectInputStream (fis);
+
+            if(extension.equals("ghf")){
+                greenhouseFileInfo = (GreenhouseFileInfo)in.readObject();
+            }
+
+            if(extension.equals("stf")){
+                standFileInfo = (StandFileInfo)in.readObject();
+            }
+
+            fis.close();
+            in.close();
+
+        }
+
+        return extension;
+
+    }
+
+    private void openedGreehouseFile(){
+        StandFileInfo[] s = greenhouseFileInfo.get();
+        tabbedPane.removeAll();
+        for (StandFileInfo value : s) {
+            createTab(value.dataPack(), value.alerts(), value.graphData(), value.alertManager());
+        }
+
+    }
+
+    private void openedStandFile(){
+        createTab(standFileInfo.dataPack(), standFileInfo.alerts(), standFileInfo.graphData(), standFileInfo.alertManager());
+        //System.out.println("Leu: " + standFileInfo.dataPack().getTabName());
+    }
+
+    private void saveGreenhouseFile() throws IOException{
+        GreenhouseFileInfo gfi = new GreenhouseFileInfo();
+        int returnVal;
+
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+            gfi.add(((TabPanel) tabbedPane.getComponentAt(i)).standFileInfo());
+        }
+
+        if(tabbedPane.getComponentCount() > 0) {
+            fc.setSelectedFile(new File("untitled.ghf"));
+            returnVal = fc.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File saveFile = fc.getSelectedFile();
+                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(saveFile));
+                out.writeObject(gfi);
+                out.close();
+            }
+        }
+    }
+
+    private void saveStandFile() throws IOException{
+        TabPanel tp = ((TabPanel) tabbedPane.getSelectedComponent());
+        int returnVal;
+
+        if(tp != null) {
+            //returnVal = fc.showOpenDialog(this);
+            fc.setSelectedFile(new File(tp.getDataPack().getTabName().toLowerCase() + ".stf"));
+            returnVal = fc.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File saveFile = fc.getSelectedFile();
+                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(saveFile));
+                out.writeObject(tp.standFileInfo());
+                out.close();
+            }
+        }
+    }
+
     private void onSelectConfigAlert(){
 
         if(tabbedPane.getSelectedComponent() != null){
@@ -113,9 +257,7 @@ public class Window extends JFrame /*implements SerialListener */{
             String[] sensoresold = ((TabPanel) tabbedPane.getSelectedComponent()).getDataPack().getAvailableString();
             String[] sensoresnew = new String[sensoresold.length - 2];
 
-            for (int i = 0; i < sensoresnew.length; i++) {
-                sensoresnew[i] = sensoresold[i + 2];
-            }
+            System.arraycopy(sensoresold, 2, sensoresnew, 0, sensoresnew.length);
 
             ConfigAlertsWindow caw = new ConfigAlertsWindow(this, ((TabPanel) tabbedPane.getSelectedComponent()).alertManager(), sensoresnew);
 
@@ -124,6 +266,7 @@ public class Window extends JFrame /*implements SerialListener */{
             if (am != null) {
                 if (tabbedPane.getSelectedComponent() != null) {
                     ((TabPanel) tabbedPane.getSelectedComponent()).alertManager(am);
+                    onChangeSomething(true);
                 }
             }
         }
@@ -140,7 +283,7 @@ public class Window extends JFrame /*implements SerialListener */{
     private void updateData(){
 
         str[0] = "" + (125 + (int)(Math.sin(counterteste[0])*10));
-        str[1] = "" + (100 + (int)(Math.sin(counterteste[1])*10));
+        str[1] = "" + (100 + (int)(Math.cos(counterteste[1])*10));
         str[2] = "" + (75 + (int)(Math.sin(counterteste[2])*10));
         str[3] = "" + (50 + (int)(Math.sin(counterteste[3])*10));
         str[4] = "" + (25 + (int)(Math.sin(counterteste[4])*10));
@@ -165,17 +308,41 @@ public class Window extends JFrame /*implements SerialListener */{
         pack();
     }
 
+    private void createTab(DataPack dataPack, String str, GraphData[] g, AlertManager am){
+
+        TabPanel tp = new TabPanel(dataPack);
+        tp.addTextAlertPanel(str.substring(28), "red_b");
+        tp.alertManager(am);
+        tp.graphData(g);
+
+        String[] labelup = new String[g.length];
+        for (int i = 0; i < labelup.length; i++) {
+            labelup[i] = "" + g[i].getCurrValue()[g[i].getCurrValue().length - 1];
+        }
+
+        tp.dataPanel().updateLabels(labelup);
+        /*tp.getGraphPanel().getGraph().repaint();
+        tp.getGraphPanel().repaint();
+        tp.repaint();*/
+        tabbedPane.addTab(dataPack.getTabName(), tp);
+        tabbedPane.setTabComponentAt(tabbedPane.getTabCount()-1, new ButtonTabPanel(tabbedPane));
+        tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1);
+        //this.repaint();
+        pack();
+    }
+
     private void onSelectNewStand(){
 
-        DataPack dataPack = null;
+        DataPack dataPack;
 
-        ConfigStandWindow newStand = new ConfigStandWindow(this, dataPack, "Nova bancada", true);
+        ConfigStandWindow newStand = new ConfigStandWindow(this, null, "Nova bancada", true);
 
         dataPack = newStand.showDialog();
 
         if(dataPack != null) {
             if (dataPack.getAvailableNum() > 2) {
                 createTab(dataPack);
+                onChangeSomething(true);
             }
         }
 
@@ -193,10 +360,15 @@ public class Window extends JFrame /*implements SerialListener */{
 
             dp = configStand.showDialog();
 
-            if(dp.getAvailableNum() > 2) {
+            if((dp != null) && (dp.getAvailableNum() > 2)){
                 tp.setDataPack(dp);
+                onChangeSomething(true);
             }
         }
+    }
+
+    private void onChangeSomething(boolean b){
+
     }
 
 }

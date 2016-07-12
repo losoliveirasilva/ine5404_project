@@ -673,12 +673,8 @@ public class ConfigStandWindow extends JDialog{
             lblLightColor.setVisible((sensorsValue & 512) == 512);
             btnLightColor.setVisible((sensorsValue & 512) == 512);
 
-
-            System.out.println(seriesNumValue);
-            System.out.println(sensorsValue);
-            System.out.println(actsValue);
         }else{
-            System.out.println("String com quantidade errada!");
+            JOptionPane.showMessageDialog(panel, "Código com número de caracteres incorreto!", "Atenção!", JOptionPane.WARNING_MESSAGE);
         }
 
         pack();
@@ -687,30 +683,43 @@ public class ConfigStandWindow extends JDialog{
     public void onChangeColor(String btn){
         ColorChooserWindow cc = new ColorChooserWindow(this);
 
-        if(btn.equals("Back")){
-            ciBack.setColor(cc.showColorChooser(ciBack.getColor()));
-        }else if(btn.equals("Grid")){
-            ciGrid.setColor(cc.showColorChooser(ciGrid.getColor()));
-        }else if(btn.equals("pH")){
-            cipH.setColor(cc.showColorChooser(cipH.getColor()));
-        }else if(btn.equals("DO")){
-            ciDO.setColor(cc.showColorChooser(ciDO.getColor()));
-        }else if(btn.equals("EC")){
-            ciEC.setColor(cc.showColorChooser(ciEC.getColor()));
-        }else if(btn.equals("ORP")){
-            ciORP.setColor(cc.showColorChooser(ciORP.getColor()));
-        }else if(btn.equals("Flux")){
-            ciFlux.setColor(cc.showColorChooser(ciFlux.getColor()));
-        }else if(btn.equals("TAg")){
-            ciTAg.setColor(cc.showColorChooser(ciTAg.getColor()));
-        }else if(btn.equals("NvAg")){
-            ciNvAg.setColor(cc.showColorChooser(ciNvAg.getColor()));
-        }else if(btn.equals("TAm")){
-            ciTAm.setColor(cc.showColorChooser(ciTAm.getColor()));
-        }else if(btn.equals("Hum")){
-            ciHum.setColor(cc.showColorChooser(ciHum.getColor()));
-        }else if(btn.equals("Light")){
-            ciLight.setColor(cc.showColorChooser(ciLight.getColor()));
+        switch (btn) {
+            case "Back":
+                ciBack.setColor(cc.showColorChooser(ciBack.getColor()));
+                break;
+            case "Grid":
+                ciGrid.setColor(cc.showColorChooser(ciGrid.getColor()));
+                break;
+            case "pH":
+                cipH.setColor(cc.showColorChooser(cipH.getColor()));
+                break;
+            case "DO":
+                ciDO.setColor(cc.showColorChooser(ciDO.getColor()));
+                break;
+            case "EC":
+                ciEC.setColor(cc.showColorChooser(ciEC.getColor()));
+                break;
+            case "ORP":
+                ciORP.setColor(cc.showColorChooser(ciORP.getColor()));
+                break;
+            case "Flux":
+                ciFlux.setColor(cc.showColorChooser(ciFlux.getColor()));
+                break;
+            case "TAg":
+                ciTAg.setColor(cc.showColorChooser(ciTAg.getColor()));
+                break;
+            case "NvAg":
+                ciNvAg.setColor(cc.showColorChooser(ciNvAg.getColor()));
+                break;
+            case "TAm":
+                ciTAm.setColor(cc.showColorChooser(ciTAm.getColor()));
+                break;
+            case "Hum":
+                ciHum.setColor(cc.showColorChooser(ciHum.getColor()));
+                break;
+            case "Light":
+                ciLight.setColor(cc.showColorChooser(ciLight.getColor()));
+                break;
         }
 
     }

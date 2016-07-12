@@ -165,6 +165,7 @@ public class ConfigAlertsWindow extends JDialog {
 
     public void addAlertPanel(){
         panelception.add(new ConfigAlertPanel(this, str));
+        revalidate();
         repaint();
     }
 

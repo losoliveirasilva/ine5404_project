@@ -112,11 +112,15 @@ public class AlertsPanel extends JPanel{
 
     }
 
-    public void addText(String str, String style){
+    public void text(String str, String style){
         try {
             doc.insertString(doc.getLength(), str, doc.getStyle(style));
         } catch (BadLocationException ble) {
             System.err.println("Couldn't insert initial text into text pane.");
         }
+    }
+
+    public String text(){
+        return tPane.getText();
     }
 }

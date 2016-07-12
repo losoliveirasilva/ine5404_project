@@ -1,11 +1,14 @@
 package main;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by losoliveirasilva on 6/28/16.
  */
-public class AlertManager {
+public class AlertManager implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private ArrayList<Alert> alertsList;
 

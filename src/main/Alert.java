@@ -1,12 +1,15 @@
 package main;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
  * Created by losoliveirasilva on 6/24/16.
  */
-public class Alert {
+public class Alert  implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String sensor;
     private int sensorNum;

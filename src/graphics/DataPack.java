@@ -1,11 +1,14 @@
 package graphics;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * Created by losoliveirasilva on 6/2/16.
  */
-public class DataPack {
+public class DataPack implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /* Code */
     private String code;

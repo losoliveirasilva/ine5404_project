@@ -37,16 +37,16 @@ public class Graph extends JPanel {
             data[i] = new GraphData(0, 140, 50);
         }
 
-        /*// pH
-        data[0] = new GraphData(0, 140, 50);
-
-        // Outros (a fazer)
-        data[1] = new GraphData(0, 140, 50);
-        data[2] = new GraphData(0, 140, 50);
-        data[3] = new GraphData(0, 140, 50);*/
-
         setPreferredSize(new Dimension(width+1, height+1));
 
+    }
+
+    public GraphData[] graphData(){
+        return data;
+    }
+
+    public void graphData(GraphData[] gd){
+        data = gd;
     }
 
     public void setDataPack(DataPack dp) {
@@ -56,10 +56,6 @@ public class Graph extends JPanel {
         drawData(this.getGraphics());
         drawBorders(this.getGraphics());
     }
-
-    public GraphData [] getGraphData(){ return data;}
-
-    public void setGraphData(GraphData [] g) {this.data = g; }
 
     public void paint(Graphics g) {
         super.paint(g);
@@ -78,6 +74,7 @@ public class Graph extends JPanel {
         for (int i = 1; i < vBorders; i++) {
             g.drawLine(0, height - (height * i) / vBorders, width, height - (height * i) / vBorders);
         }
+
     }
 
     public void drawData(Graphics g) {
