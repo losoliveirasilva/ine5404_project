@@ -4,6 +4,7 @@ import graphics.*;
 import panels.*;
 //import rxtx.*;
 
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 
 import java.awt.*;
@@ -266,7 +267,6 @@ class Window extends JFrame /*implements SerialListener */{
             if (am != null) {
                 if (tabbedPane.getSelectedComponent() != null) {
                     ((TabPanel) tabbedPane.getSelectedComponent()).alertManager(am);
-                    onChangeSomething(true);
                 }
             }
         }
@@ -282,11 +282,11 @@ class Window extends JFrame /*implements SerialListener */{
 
     private void updateData(){
 
-        str[0] = "" + (125 + (int)(Math.sin(counterteste[0])*10));
-        str[1] = "" + (100 + (int)(Math.cos(counterteste[1])*10));
-        str[2] = "" + (75 + (int)(Math.sin(counterteste[2])*10));
-        str[3] = "" + (50 + (int)(Math.sin(counterteste[3])*10));
-        str[4] = "" + (25 + (int)(Math.sin(counterteste[4])*10));
+        str[0] = Integer.toString(125 + (int)(Math.sin(counterteste[0])*10));
+        str[1] = Integer.toString(100 + (int)(Math.cos(counterteste[1])*10));
+        str[2] = Integer.toString(75 + (int)(Math.sin(counterteste[2])*10));
+        str[3] = Integer.toString(50 + (int)(Math.sin(counterteste[3])*10));
+        str[4] = Integer.toString(25 + (int)(Math.sin(counterteste[4])*10));
 
         if(tabbedPane.getSelectedComponent() != null)
             ((TabPanel)tabbedPane.getSelectedComponent()).setNewData(str);
@@ -297,6 +297,7 @@ class Window extends JFrame /*implements SerialListener */{
                 counterteste[i] = 0;
             }
         }
+
     }
 
     private void createTab(DataPack dataPack){
@@ -342,7 +343,6 @@ class Window extends JFrame /*implements SerialListener */{
         if(dataPack != null) {
             if (dataPack.getAvailableNum() > 2) {
                 createTab(dataPack);
-                onChangeSomething(true);
             }
         }
 
@@ -362,13 +362,8 @@ class Window extends JFrame /*implements SerialListener */{
 
             if((dp != null) && (dp.getAvailableNum() > 2)){
                 tp.setDataPack(dp);
-                onChangeSomething(true);
             }
         }
-    }
-
-    private void onChangeSomething(boolean b){
-
     }
 
 }

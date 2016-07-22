@@ -69,22 +69,12 @@ public class ConfigAlertPanel extends JPanel{
         }
         comboBox.setPreferredSize(new Dimension(124, 24));
         comboBox.addActionListener(
-            new ActionListener () {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    onChange();
-                }
-            }
+            e -> onChange()
         );
         lbl1 = new JLabel("for");
         cbmenor = new JCheckBox("menor que");
         cbmenor.addActionListener(
-            new ActionListener () {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    onChange();
-                }
-            }
+            e -> onChange()
         );
         tfmenor = new JTextField();
         tfmenor.getDocument().addDocumentListener(
@@ -103,12 +93,7 @@ public class ConfigAlertPanel extends JPanel{
         tfmenor.setPreferredSize(new Dimension(80, 24));
         cbmaior = new JCheckBox("maior que");
         cbmaior.addActionListener(
-            new ActionListener () {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    onChange();
-                }
-            }
+            e -> onChange()
         );
         tfmaior = new JTextField();
         tfmaior.getDocument().addDocumentListener(
@@ -129,22 +114,12 @@ public class ConfigAlertPanel extends JPanel{
         btnSave.setPreferredSize(new Dimension(80, 30));
         btnSave.setEnabled(false);
         btnSave.addActionListener(
-            new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    onSave();
-                }
-            }
+            e -> onSave()
         );
         btnDelete = new JButton("Deletar");
         btnDelete.setPreferredSize(new Dimension(80, 30));
         btnDelete.addActionListener(
-            new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    removeThis();
-                }
-            }
+            e -> removeThis()
         );
 
         this.setLayout(layout);
@@ -245,9 +220,9 @@ public class ConfigAlertPanel extends JPanel{
             gt = -1;
         }
 
-        Alert a = new Alert(comboBox.getSelectedItem().toString(), comboBox.getSelectedIndex()-1, lt, gt);
+        //Alert a = new Alert(comboBox.getSelectedItem().toString(), comboBox.getSelectedIndex()-1, lt, gt);
 
-        return a;
+        return new Alert(comboBox.getSelectedItem().toString(), comboBox.getSelectedIndex()-1, lt, gt);
     }
 
 }
