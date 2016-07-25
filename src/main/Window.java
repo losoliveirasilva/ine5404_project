@@ -20,7 +20,9 @@ class Window extends JFrame /*implements SerialListener */{
     private StandFileInfo standFileInfo;
     private GreenhouseFileInfo greenhouseFileInfo;
 
-    private final JFileChooser fc = new JFileChooser();
+    private JFileChooser fc;
+
+    private JScrollPane paneScrollPane;
 
     private double[] counterteste = {0.0, 0.0, 0.0, 0.0, 0.0};
 
@@ -31,8 +33,10 @@ class Window extends JFrame /*implements SerialListener */{
 
         getOSLookAndFeel();
 
+        fc = new JFileChooser();
         fc.addChoosableFileFilter(new GreenhouseFileFilter());
         fc.addChoosableFileFilter(new StandFileFilter());
+
 
         tabbedPane = new JTabbedPane();
 
@@ -147,13 +151,22 @@ class Window extends JFrame /*implements SerialListener */{
         menuBar.add(menuTools);
         menuBar.add(menuHelp);
 
-        add(tabbedPane);
+        paneScrollPane = new JScrollPane(tabbedPane);
+        paneScrollPane.setVerticalScrollBarPolicy(
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        paneScrollPane.setHorizontalScrollBarPolicy(
+            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        //add(tabbedPane);
+
+        add(paneScrollPane);
 
         setTitle("Kodama");
         setJMenuBar(menuBar);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setMinimumSize(new Dimension(1175, 715));
+        //setMinimumSize(new Dimension(1175, 715));
+        setPreferredSize(new Dimension(1175, 750));
 
         pack();
 
