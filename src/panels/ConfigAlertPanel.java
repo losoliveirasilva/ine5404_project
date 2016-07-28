@@ -68,14 +68,10 @@ public class ConfigAlertPanel extends JPanel{
             comboBox.addItem(s[i]);
         }
         comboBox.setPreferredSize(new Dimension(124, 24));
-        comboBox.addActionListener(
-            e -> onChange()
-        );
+        comboBox.addActionListener(e -> onChange());
         lbl1 = new JLabel("for");
         cbmenor = new JCheckBox("menor que");
-        cbmenor.addActionListener(
-            e -> onChange()
-        );
+        cbmenor.addActionListener(e -> onChange());
         tfmenor = new JTextField();
         tfmenor.getDocument().addDocumentListener(
             new DocumentListener() {
@@ -85,16 +81,12 @@ public class ConfigAlertPanel extends JPanel{
                 public void removeUpdate(DocumentEvent e) {
                     onChange();
                 }
-                public void insertUpdate(DocumentEvent e) {
-                    onChange();
-                }
+                public void insertUpdate(DocumentEvent e) { onChange(); }
             }
         );
         tfmenor.setPreferredSize(new Dimension(80, 24));
         cbmaior = new JCheckBox("maior que");
-        cbmaior.addActionListener(
-            e -> onChange()
-        );
+        cbmaior.addActionListener(e -> onChange());
         tfmaior = new JTextField();
         tfmaior.getDocument().addDocumentListener(
             new DocumentListener() {
@@ -113,14 +105,10 @@ public class ConfigAlertPanel extends JPanel{
         btnSave = new JButton("Salvar");
         btnSave.setPreferredSize(new Dimension(80, 30));
         btnSave.setEnabled(false);
-        btnSave.addActionListener(
-            e -> onSave()
-        );
+        btnSave.addActionListener(e -> onSave());
         btnDelete = new JButton("Deletar");
         btnDelete.setPreferredSize(new Dimension(80, 30));
-        btnDelete.addActionListener(
-            e -> removeThis()
-        );
+        btnDelete.addActionListener(e -> removeThis());
 
         this.setLayout(layout);
         layout.setAutoCreateGaps(true);

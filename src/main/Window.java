@@ -4,6 +4,7 @@ import graphics.*;
 import panels.*;
 //import rxtx.*;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 
@@ -32,6 +33,12 @@ class Window extends JFrame /*implements SerialListener */{
         super();
 
         getOSLookAndFeel();
+
+        /*try {
+            this.setIconImage(ImageIO.read(new File("icon_.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
 
         fc = new JFileChooser();
         fc.addChoosableFileFilter(new GreenhouseFileFilter());
