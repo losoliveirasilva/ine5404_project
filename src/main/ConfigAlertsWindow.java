@@ -1,5 +1,6 @@
 package main;
 
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import panels.AlertsPanel;
 import panels.ConfigAlertPanel;
 
@@ -26,6 +27,9 @@ public class ConfigAlertsWindow extends JDialog {
     private AlertManager am = new AlertManager();
 
     private String str[];
+
+    private ConfigAlertPanel cap_;
+
 
     public ConfigAlertsWindow(JFrame parent, AlertManager am, String[] sensorLabel){
         super(parent);
@@ -132,10 +136,18 @@ public class ConfigAlertsWindow extends JDialog {
             }
         });
 
+        cap_ = new ConfigAlertPanel(this, str);
+
+        this.pack();
+
+        Dimension d = this.getSize();
+        d.setSize(d.getWidth(), d.getHeight()*2.3);
+
         setTitle("Configurar alertas");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(new Dimension(675, 500));
+        //setSize(new Dimension(675, 500));
+        setSize(d);
         setResizable(false);
 
     }

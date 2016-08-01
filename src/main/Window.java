@@ -2,6 +2,8 @@ package main;
 
 import graphics.*;
 import panels.*;
+import rxtx.SerialListener;
+import rxtx.TwoWaySerialComm;
 //import rxtx.*;
 
 import javax.imageio.ImageIO;
@@ -27,6 +29,9 @@ class Window extends JFrame /*implements SerialListener */{
 
     private double[] counterteste = {0.0, 0.0, 0.0, 0.0, 0.0};
 
+
+    private String[] dataContent = new String[5];
+
     private String[] str = new String[5];
 
     Window() {
@@ -47,16 +52,12 @@ class Window extends JFrame /*implements SerialListener */{
 
         tabbedPane = new JTabbedPane();
 
-        /*TwoWaySerialComm serial = new TwoWaySerialComm(dataContent);
+        TwoWaySerialComm serial = new TwoWaySerialComm(dataContent);
         serial.addListener(
-            new SerialListener() {
-                public void serialReceived() {
-                    updateData();
-                }
-            }
-        );*/
+            () -> updateData()
+        );
 
-        //serial.getPortList();
+        serial.getPortList();
 
         JMenuBar menuBar;
         JMenu menuFile, menuHelp, menuTools, submenuPorts, submenuBaud;
