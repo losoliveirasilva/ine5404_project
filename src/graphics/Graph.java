@@ -34,7 +34,7 @@ public class Graph extends JPanel {
         setBackground(colors[0]);
 
         for (int i = 0; i < data.length; i++){
-            data[i] = new GraphData(0, 140, 50);
+            data[i] = new GraphData(0, 255, 50);
         }
 
         setPreferredSize(new Dimension(width+1, height+1));

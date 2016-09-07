@@ -2,9 +2,10 @@ package main;
 
 import graphics.*;
 import panels.*;
+//import rxtx.TwoWaySerialComm;
 //import rxtx.SerialListener;
 //import rxtx.TwoWaySerialComm;
-//import rxtx.*;
+import rxtx.*;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
@@ -15,7 +16,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
 
-class Window extends JFrame /*implements SerialListener */{
+public class Window extends JFrame /*implements SerialListener */{
     public static final long serialVersionUID = 1L;
 
     private JTabbedPane tabbedPane;
@@ -40,7 +41,7 @@ class Window extends JFrame /*implements SerialListener */{
         getOSLookAndFeel();
 
         /*try {
-            this.setIconImage(ImageIO.read(new File("icon_.png")));
+            this.setIconImage(ImageIO.read(new File("icon.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }*/
@@ -52,17 +53,17 @@ class Window extends JFrame /*implements SerialListener */{
 
         tabbedPane = new JTabbedPane();
 
-        /*TwoWaySerialComm serial = new TwoWaySerialComm(dataContent);
-        serial.addListener(
-            () -> updateData()
-        );
-
+        TwoWaySerialComm serial = new TwoWaySerialComm(this);
         serial.getPortList();
-        */
+        /*try {
+            serial.connect("COM3");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
 
         JMenuBar menuBar;
         JMenu menuFile, menuHelp, menuTools, submenuPorts, submenuBaud;
-        JMenuItem itemSaveGrennhouseFile, itemSaveStandFile, itemOpenFile, itemNew, itemAbout, itemEditStand, itemEditAlerts;
+        JMenuItem itemSaveGrennhouseFile, itemSaveStandFile, itemOpenFile, itemNew, itemAbout, itemEditStand, itemEditAlerts, itemConnection;
         JCheckBoxMenuItem itemBaud9600;
 
         menuBar = new JMenuBar();
@@ -126,7 +127,12 @@ class Window extends JFrame /*implements SerialListener */{
         itemAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
         itemAbout.addActionListener(
             e -> {
-                updateData();
+                try {
+                    serial.connect("COM3");
+                } catch (Exception i) {
+                    i.printStackTrace();
+                }
+                //updateData("");
                 //JOptionPane.showMessageDialog(this, "Janela \"Sobre\"", "Sobre", JOptionPane.INFORMATION_MESSAGE);
             }
         );
@@ -175,8 +181,9 @@ class Window extends JFrame /*implements SerialListener */{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //setMinimumSize(new Dimension(1175, 715));
-        setPreferredSize(new Dimension(1175, 750));
+        //setPreferredSize(new Dimension(1175, 750));
 
+        this.setExtendedState(MAXIMIZED_BOTH);
         pack();
 
         updateData();
@@ -302,7 +309,7 @@ class Window extends JFrame /*implements SerialListener */{
         }
     }
 
-    private void updateData(){
+    public void updateData(){
 
         str[0] = Integer.toString(125 + (int)(Math.sin(counterteste[0])*10));
         str[1] = Integer.toString(100 + (int)(Math.cos(counterteste[1])*10));
@@ -320,6 +327,32 @@ class Window extends JFrame /*implements SerialListener */{
             }
         }
 
+    }
+
+    public void updateData(String strReceived){
+        String code = "";
+        String seriesNum = strReceived.substring(0, 3);
+        String sensors = strReceived.substring(3, 6);
+
+        String[] stringVect;
+
+        for(int i = 0; i < tabbedPane.getTabCount(); i++){
+            code = ((TabPanel)tabbedPane.getComponentAt(i)).getDataPack().getCode();
+
+            if(strReceived.substring(0,3).equals(seriesNum)){
+                // "#001|S001=255|S002=128|S004=128\r\n"
+                //  01234567890123456789012345678901234
+                //            1         2         3
+
+                System.out.println(((TabPanel)tabbedPane.getComponentAt(i)).getDataPack().getAvailableNum() - 2);
+                System.out.println(strReceived);
+                stringVect = new String[((TabPanel)tabbedPane.getComponentAt(i)).getDataPack().getAvailableNum() - 2];
+                for(int j = 0; j < stringVect.length; j++){
+                    stringVect[j] = "" + strReceived.substring(j*9 + 10, j*9 + 13);
+                }
+                ((TabPanel)tabbedPane.getComponentAt(i)).setNewData(stringVect);
+            }
+        }
     }
 
     private void createTab(DataPack dataPack){
