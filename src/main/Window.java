@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.util.Enumeration;
 
 public class Window extends JFrame /*implements SerialListener */{
     public static final long serialVersionUID = 1L;
@@ -35,6 +36,8 @@ public class Window extends JFrame /*implements SerialListener */{
 
     private String[] str = new String[5];
 
+    private TwoWaySerialComm serial;
+
     Window() {
         super();
 
@@ -53,8 +56,8 @@ public class Window extends JFrame /*implements SerialListener */{
 
         tabbedPane = new JTabbedPane();
 
-        TwoWaySerialComm serial = new TwoWaySerialComm(this);
-        serial.getPortList();
+        serial = new TwoWaySerialComm(this);
+        //serial.getPortList();
         /*try {
             serial.connect("COM3");
         } catch (Exception e) {
@@ -62,9 +65,9 @@ public class Window extends JFrame /*implements SerialListener */{
         }*/
 
         JMenuBar menuBar;
-        JMenu menuFile, menuHelp, menuTools, submenuPorts, submenuBaud;
-        JMenuItem itemSaveGrennhouseFile, itemSaveStandFile, itemOpenFile, itemNew, itemAbout, itemEditStand, itemEditAlerts, itemConnection;
-        JCheckBoxMenuItem itemBaud9600;
+        JMenu menuFile, menuHelp, menuTools;
+        JMenuItem   itemSaveGrennhouseFile, itemSaveStandFile, itemOpenFile, itemNew,
+                    itemAbout, itemEditStand, itemEditAlerts, itemConnection;
 
         menuBar = new JMenuBar();
         menuFile = new JMenu("Arquivo");
@@ -72,11 +75,8 @@ public class Window extends JFrame /*implements SerialListener */{
         itemOpenFile = new JMenuItem("Abrir...");
         itemSaveGrennhouseFile = new JMenuItem("Salvar estufa");
         itemSaveStandFile = new JMenuItem("Salvar bancada");
+        itemConnection = new JMenuItem("Conexões");
         menuTools = new JMenu("Ferramentas");
-        submenuPorts = new JMenu("Ports");
-        submenuBaud = new JMenu("Baud Rate");
-        itemBaud9600 = new JCheckBoxMenuItem("9600");
-        itemBaud9600.setState(true);
         itemEditStand = new JMenuItem("Editar Bancada");
         itemEditAlerts = new JMenuItem("Editar Alertas");
         menuHelp = new JMenu("Ajuda");
@@ -127,13 +127,8 @@ public class Window extends JFrame /*implements SerialListener */{
         itemAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
         itemAbout.addActionListener(
             e -> {
-                try {
-                    serial.connect("COM3");
-                } catch (Exception i) {
-                    i.printStackTrace();
-                }
                 //updateData("");
-                //JOptionPane.showMessageDialog(this, "Janela \"Sobre\"", "Sobre", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Janela \"Sobre\"", "Sobre", JOptionPane.INFORMATION_MESSAGE);
             }
         );
 
@@ -152,6 +147,10 @@ public class Window extends JFrame /*implements SerialListener */{
             e -> onSelectConfigAlert()
         );
 
+        itemConnection.addActionListener(
+                e -> onConnection(serial.getPortList())
+        );
+
         menuFile.add(itemNew);
         menuFile.add(itemOpenFile);
         menuFile.add(itemSaveGrennhouseFile);
@@ -159,9 +158,7 @@ public class Window extends JFrame /*implements SerialListener */{
         menuHelp.add(itemAbout);
         menuTools.add(itemEditStand);
         menuTools.add(itemEditAlerts);
-        menuTools.add(submenuPorts);
-        submenuBaud.add(itemBaud9600);
-        menuTools.add(submenuBaud);
+        menuTools.add(itemConnection);
         menuBar.add(menuFile);
         menuBar.add(menuTools);
         menuBar.add(menuHelp);
@@ -188,6 +185,24 @@ public class Window extends JFrame /*implements SerialListener */{
 
         updateData();
 
+    }
+
+    private void onConnection(Enumeration e){
+        ConnectionWindow cw = new ConnectionWindow(this, e);
+        String[] str = cw.showDialog();
+
+        System.out.println("0: " + str[0]);
+        System.out.println("1: " + str[1]);
+
+        if(!str[0].equals("Escolha a porta") && !str[1].equals("Escolha o baud rate") && !str[0].equals("nope")){
+            try {
+                serial.connect(str[0], Integer.parseInt(str[1]));
+                JOptionPane.showMessageDialog(this, "Conectado na porta: " + str[0], "Conectado", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception i) {
+                i.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erro de conexão", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private String openFile() throws IOException, ClassNotFoundException{
@@ -333,13 +348,15 @@ public class Window extends JFrame /*implements SerialListener */{
         String code = "";
         String seriesNum = strReceived.substring(0, 3);
         String sensors = strReceived.substring(3, 6);
+        int numSensors = 0;
 
         String[] stringVect;
+        String str = "";
 
         for(int i = 0; i < tabbedPane.getTabCount(); i++){
             code = ((TabPanel)tabbedPane.getComponentAt(i)).getDataPack().getCode();
 
-            if(strReceived.substring(0,3).equals(seriesNum)){
+            if(strReceived.substring(0,3).equals(code)){
                 // "#001|S001=255|S002=128|S004=128\r\n"
                 //  01234567890123456789012345678901234
                 //            1         2         3
@@ -347,8 +364,9 @@ public class Window extends JFrame /*implements SerialListener */{
                 System.out.println(((TabPanel)tabbedPane.getComponentAt(i)).getDataPack().getAvailableNum() - 2);
                 System.out.println(strReceived);
                 stringVect = new String[((TabPanel)tabbedPane.getComponentAt(i)).getDataPack().getAvailableNum() - 2];
+                str = strReceived.substring(8);
                 for(int j = 0; j < stringVect.length; j++){
-                    stringVect[j] = "" + strReceived.substring(j*9 + 10, j*9 + 13);
+                    stringVect[j] = "" + str.substring(j*3, (j + 1)*3);
                 }
                 ((TabPanel)tabbedPane.getComponentAt(i)).setNewData(stringVect);
             }

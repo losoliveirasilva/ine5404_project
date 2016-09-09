@@ -26,7 +26,7 @@ public class TwoWaySerialComm
         window = w;
     }
 
-    public void connect (String portName) throws Exception
+    public void connect (String portName, int baud) throws Exception
     {
         CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
         if ( portIdentifier.isCurrentlyOwned() )
@@ -40,7 +40,7 @@ public class TwoWaySerialComm
             if ( commPort instanceof SerialPort )
             {
                 SerialPort serialPort = (SerialPort) commPort;
-                serialPort.setSerialPortParams(9600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
+                serialPort.setSerialPortParams(baud,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
 
                 InputStream in = serialPort.getInputStream();
                 OutputStream out = serialPort.getOutputStream();
@@ -68,24 +68,84 @@ public class TwoWaySerialComm
             window2 = w2;
         }
 
+        private int bitsCounter(String str){
+            if(str.equals("0"))
+                return 0;
+            if(str.equals("1") || str.equals("2") || str.equals("4") || str.equals("8"))
+                return 1;
+            if(str.equals("3") || str.equals("5") || str.equals("6") || str.equals("9") ||
+               str.equals("A") || str.equals("a") || str.equals("C") || str.equals("c"))
+                return 2;
+            if(str.equals("7") || str.equals("B") || str.equals("b") || str.equals("D") || str.equals("d") ||
+               str.equals("E") || str.equals("e"))
+                return 3;
+            if(str.equals("F") || str.equals("f"))
+                return 4;
+
+            return -1;
+        }
+
         public void run ()
         {
             byte[] buffer = new byte[1];
             int len = -1;
             String bufferIn;
             String str = "";
+            String state = "";
+            int numZigbee = 0;
+            int numInfo = 0;
+            int numSensores = 0;
             //String time = "";/*new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime())*/
             try
             {
                 while ((len = this.in.read(buffer)) > -1) {
                     if (len > 0) {
                         bufferIn = new String(buffer, 0, len);
-                        str += bufferIn;
-                        if (bufferIn.equals("\n")) {
-                            //time = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
-                            //System.out.print(time + ": ");
-                            window2.updateData(str);
-                            str = "";
+                        if(bufferIn.equals(126))
+                            state = "start";
+
+                        switch(state){
+                            case "idle":
+                                break;
+                            case "start":
+                                state = "zigbee";
+                                break;
+                            case "zigbee":
+                                if(numZigbee < 14)
+                                    ++numZigbee;
+                                else {
+                                    numZigbee = 0;
+                                    state = "info";
+                                }
+                                break;
+                            case "info":
+                                str += bufferIn;
+                                numInfo++;
+
+                                // ID
+                                if(numInfo >= 1 && numInfo <= 3)
+                                    ;
+
+                                // Sensores
+                                if(numInfo >= 4 && numInfo <= 6){
+                                    numSensores += bitsCounter(bufferIn);
+                                }
+
+                                if(numInfo >= (8 + (3*numSensores))) {
+                                    // 3 id
+                                    // 3 sensor
+                                    // 2 atuador
+                                    // 3*numSensores
+                                    state = "checksum";
+                                }
+
+                                break;
+                            case "checksum":
+                                window2.updateData(str);
+                                str = "";
+                                state = "idle";
+                                numInfo = 0;
+                                break;
                         }
                     }
                 }
