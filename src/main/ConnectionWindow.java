@@ -1,5 +1,7 @@
 package main;
 
+import gnu.io.CommPortIdentifier;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,8 +34,15 @@ public class ConnectionWindow  extends JDialog {
 
         cb_port = new JComboBox();
         cb_port.addItem("Escolha a porta");
-        for (; e.hasMoreElements();)
-            cb_port.addItem(e.nextElement());
+        //for (; e.hasMoreElements();) cb_port.addItem(e.nextElement());
+
+        while(e.hasMoreElements()){
+            //System.out.println("Has more elements");
+            CommPortIdentifier portId = (CommPortIdentifier) e.nextElement();
+            if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
+                cb_port.addItem(portId.getName());
+            }
+        }
 
         cb_baud = new JComboBox();
         cb_baud.addItem("Escolha o baud rate");
